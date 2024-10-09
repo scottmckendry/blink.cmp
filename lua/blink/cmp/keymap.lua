@@ -53,7 +53,9 @@ end
 --- @param snippet_keys_to_commands table<string, string[]>
 function keymap.apply_keymap_to_current_buffer(insert_keys_to_commands, snippet_keys_to_commands)
   -- insert mode: uses both snippet and insert commands
-  for _, key in ipairs(utils.union_keys(insert_keys_to_commands, snippet_keys_to_commands)) do
+  for _, key in
+    ipairs(vim.tbl_extend('force', vim.tbl_keys(insert_keys_to_commands), vim.tbl_keys(snippet_keys_to_commands)))
+  do
     keymap.set('i', key, function()
       for _, command in ipairs(insert_keys_to_commands[key] or {}) do
         local did_run = require('blink.cmp')[command]()
