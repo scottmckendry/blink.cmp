@@ -91,7 +91,7 @@ function download.from_github(tag, cb)
     )
   end
 
-  local url = 'https://github.com/saghen/blink.cmp/releases/download/'
+  local url = 'https://github.com/scottmckendry/blink.cmp/releases/download/'
     .. tag
     .. '/'
     .. system_triple
