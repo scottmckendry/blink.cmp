@@ -13,6 +13,16 @@ cmp.setup = function(opts)
 
     cmp.add_default_highlights()
 
+    vim.api.nvim_create_autocmd({ 'BufEnter', 'InsertEnter' }, {
+      callback = function()
+        if vim.tbl_contains(config.exclude_filetypes, vim.bo.filetype) then
+          vim.g.blinkcmp_enabled = false
+        else
+          vim.g.blinkcmp_enabled = true
+        end
+      end,
+    })
+
     require('blink.cmp.keymap').setup(config.keymap)
 
     -- STRUCTURE
