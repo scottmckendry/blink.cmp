@@ -35,6 +35,11 @@ jobs:
             target: x86_64-pc-windows-msvc
             artifact_name: target/x86_64-pc-windows-msvc/release/blink_cmp_fuzzy.dll
 
+          # Android builds
+          - os: ubuntu-latest
+            target: aarch64-linux-android
+            artifact_name: target/aarch64-linux-android/release/libblink_cmp_fuzzy.so
+
     steps:
       - uses: actions/checkout@v4
 
