@@ -92,7 +92,7 @@ function download.from_github(tag, cb)
     )
   end
 
-  local url = 'https://github.com/saghen/blink.cmp/releases/download/'
+  local url = 'https://github.com/scottmckendry/blink.cmp/releases/download/'
     .. tag
     .. '/'
     .. system_triple
@@ -131,14 +131,17 @@ end
 
 --- @return string | nil
 function download.get_system_triple()
-  if jit.os:lower() == 'mac' or jit.os:lower() == 'osx' then
+  if vim.fn.has('macunix') == 1 then
     if jit.arch:lower():match('arm') then return 'aarch64-apple-darwin' end
     if jit.arch:lower():match('x64') then return 'x86_64-apple-darwin' end
   end
-  if jit.os:lower() == 'windows' then
+  if vim.fn.has('win32') == 1 then
     if jit.arch:lower():match('x64') then return 'x86_64-pc-windows-msvc' end
   end
-  if jit.os:lower() ~= 'windows' then
+  if vim.fn.has('android') == 1 then
+    if jit.arch:lower():match('arm') then return 'aarch64-linux-android' end
+  end
+  if vim.fn.has('unix') == 1 then
     if jit.arch:lower():match('arm') then return 'aarch64-unknown-linux-gnu' end
     if jit.arch:lower():match('x64') then return 'x86_64-unknown-linux-gnu' end
   end
