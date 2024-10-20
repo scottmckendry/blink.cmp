@@ -158,6 +158,7 @@ end
 function download.get_system_triple_sync()
   if download_config.force_system_triple then return download_config.force_system_triple end
 
+  if vim.fn.has('android') == 1 then return 'aarch64-linux-android' end
   if jit.os:lower() == 'mac' or jit.os:lower() == 'osx' then
     if jit.arch:lower():match('arm') then return 'aarch64-apple-darwin' end
     if jit.arch:lower():match('x64') then return 'x86_64-apple-darwin' end
