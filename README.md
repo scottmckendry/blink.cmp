@@ -63,6 +63,14 @@
     -- adjusts spacing to ensure icons are aligned
     nerd_font_variant = 'mono',
 
+    -- default list of enabled providers defined so that you can extend it
+    -- elsewhere in your config, without redefining it, via `opts_extend`
+    sources = {
+      completion = {
+        enabled_providers = { 'lsp', 'path', 'snippets', 'buffer' },
+      },
+    },
+
     -- experimental auto-brackets support
     -- accept = { auto_brackets = { enabled = true } }
 
@@ -70,7 +78,7 @@
     -- trigger = { signature_help = { enabled = true } }
   },
   -- allows extending the enabled_providers array elsewhere in your config
-  -- without having to redefining it
+  -- without having to redefine it
   opts_extend = { "sources.completion.enabled_providers" }
 },
 
@@ -128,6 +136,8 @@ MiniDeps.add({
 ```
 
 </details>
+
+## Configuration
 
 <details>
 <summary><strong>Highlight groups</strong></summary>
@@ -246,10 +256,9 @@ MiniDeps.add({
 
   accept = {
     create_undo_point = true,
-    -- Function used to expand snippets, some possible values:
-    -- require('luasnip').lsp_expand     -- For `luasnip` users.
-    -- require('snippy').expand_snippet  -- For `snippy` users.
-    -- vim.fn["UltiSnips#Anon"]          -- For `ultisnips` users.
+    -- Function used to expand snippets, for luasnip users, you may use::
+    -- function(snippet) require('luasnip').lsp_expand(snippet) end
+    -- See the "Luasnip" section for info on setting up the luasnip source
     expand_snippet = vim.snippet.expand,
 
     auto_brackets = {
@@ -343,7 +352,7 @@ MiniDeps.add({
     -- list of enabled providers
     completion = {
       enabled_providers = { 'lsp', 'path', 'snippets', 'buffer' },
-    }
+    },
 
     -- Please see https://github.com/Saghen/blink.compat for using `nvim-cmp` sources
     providers = {
@@ -384,6 +393,9 @@ MiniDeps.add({
           global_snippets = { 'all' },
           extended_filetypes = {},
           ignored_filetypes = {},
+          get_filetype = function(context)
+            return vim.bo.filetype
+          end
         }
 
         --- Example usage for disabling the snippet provider after pressing trigger characters (i.e. ".")
@@ -440,14 +452,18 @@ MiniDeps.add({
           kind_icon = {
             ellipsis = false,
             text = function(ctx) return ctx.kind_icon .. ctx.icon_gap end,
-            highlight = function(ctx) return utils.get_tailwind_hl(ctx) or 'BlinkCmpKind' .. ctx.kind end,
+            highlight = function(ctx)
+              return require('blink.cmp.utils').get_tailwind_hl(ctx) or 'BlinkCmpKind' .. ctx.kind
+            end,
           },
 
           kind = {
             ellipsis = false,
             width = { fill = true },
             text = function(ctx) return ctx.kind end,
-            highlight = function(ctx) return utils.get_tailwind_hl(ctx) or 'BlinkCmpKind' .. ctx.kind end,
+            highlight = function(ctx)
+              return require('blink.cmp.utils').get_tailwind_hl(ctx) or 'BlinkCmpKind' .. ctx.kind
+            end,
           },
 
           label = {
@@ -596,6 +612,46 @@ MiniDeps.add({
 - [vim-dadbod-completion](https://github.com/kristijanhusak/vim-dadbod-completion)
 
 </details>
+
+### Luasnip
+
+There's currently no `blink.cmp` native source for [luasnip](https://github.com/L3MON4D3/LuaSnip). You may use [blink.compat](https://github.com/saghen/blink.compat) plugin with the [cmp_luasnip](https://github.com/saadparwaiz1/cmp_luasnip) nvim-cmp source in the meantime.
+
+```lua
+{
+  'saghen/blink.cmp',
+  dependencies = { 
+    'L3MON4D3/LuaSnip',
+    'saadparwaiz1/cmp_luasnip',
+    { 'saghen/blink.compat', opts = { impersonate_nvim_cmp = true } } },
+  opts = {
+    accept = {
+      expand_snippet = function(snippet) require('luasnip').lsp_expand(snippet) end,
+    },
+    sources = {
+      completion = {
+        -- WARN: add the rest of your providers here, unless you're using `opts_extend` 
+        -- and defining this outside of your primary `blink.cmp` config
+        -- see the default configuration for the default providers
+        enabled_providers = { 'luasnip' },
+      },
+      providers = {
+        luasnip = {
+          name = 'luasnip',
+          module = 'blink.compat.source',
+
+          score_offset = -3,
+
+          opts = {
+            use_show_condition = false,
+            show_autosnippets = true,
+          },
+        },
+      },
+    },
+  }
+}
+```
 
 ## How it works
 
